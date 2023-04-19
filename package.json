@@ -1,0 +1,22 @@
+{
+  "name": "noahsilvaresume",
+  "version": "1.0.0",
+  "description": "resume",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Noahs9576/noahsilvaresume.git"
+  },
+  "author": "Noah Silva",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Noahs9576/noahsilvaresume/issues"
+  },
+  "homepage": "https://github.com/Noahs9576/noahsilvaresume#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
