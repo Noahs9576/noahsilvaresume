@@ -4,11 +4,13 @@ app.use(express.json());
 
 const port = 3000;
 
-//localhost:9000
+//localhost:3000
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.sendFile(__dirname + '/resources/index.html');
+    
 });
 
-app.listen(port, () => {
-    console.log(`noahresume listening at https://noahsilva.dev:${port}`);
+app.listen(port , () => {
+    console.log(`Backend is running on port ${port}`);
 });
