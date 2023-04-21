@@ -9,7 +9,7 @@ const vuebuildfiles = fs.readdirSync(path.resolve('./dist/assets'));
 
 const port = 3000;
 
-
+var tasks = [];
 
 //localhost:3000
 app.get('/', (req, res) => {
@@ -26,6 +26,15 @@ app.get('/assets/:filename', function(req, res){
 app.get('/favicon.ico', (req,res) => {
     res.sendFile(path.resolve('./dist/favicon.ico'));
 })
+
+app.get('/getTasks', (req, res) => {
+    res.send(tasks);
+});
+
+app.post('/addTask', (req, res) => {
+    tasks.push(req.body);
+    res.send(req.body);
+});
 
 app.listen(port , () => {
     console.log(`Backend is running on port ${port}`);
