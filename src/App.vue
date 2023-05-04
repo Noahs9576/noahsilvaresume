@@ -1,33 +1,24 @@
 <template>
   <h1>{{ title }}</h1>
-
-  <h2>Add a new task</h2>
-
-  <span>You have {{ allTasks }} {{ allTasks = 1 ? 'tasks' : 'task'}} </span>
-  
-  <div>
-    <input 
-    type="text" 
-    v-model="newTask" 
-    placeholder="Add a new task"
-    >
-    <button @click="addTask" :disabled="newTask.length < 1">Add Task</button>
+  <div class="prompt-section">
+    <h2>Prompt</h2>
+    <p class="prompt"> {{ randomPrompt }}  </p>
   </div>
 
-  <div v-if="newTask.length > 0">
-    <h3>New task preview</h3>
-    <p>{{ newTask }}</p>
+  <div class="user-input">
+    <h2>Type Here</h2>
+    <input :disabled="disabled" type="text" v-model="userInput.text">
+    <div class="example"> 
+      <p style="color: green;">{{ displayInput.correctInput.text }} </p> 
+      <p style="color: red;"> {{ displayInput.wrongInput.text }}</p>
+    </div>
   </div>
 
-  <ul>
-    <li v-for="(task, index) in latest" :key="task.id">
-      {{ index + 1 }}.  {{ task.name }}
-
-      <div v-if="task.finished">
-        <button>Delete task</button>
-      </div>
-    </li>
-  </ul>
+  <div class="wpm">
+    <h2>Words Per Minute</h2>
+    <p> Not accurate yet </p>
+    <p>{{ wordsPerMinute }}</p>
+  </div>
 
 </template>
 
@@ -35,61 +26,77 @@
 export default {
   data() {
     return {
-      count: 1,
-      title: 'My To Do App',
-      newTask: '',
-      tasks: []
+      title: 'Type Speed Test',
+      disabled: false,
+      activeColor: 'red',
+      prompt: '',
+      userInput: {text: '', correct: true},
+      correctInput: {text: '', correct: true},
+      wrongInput: {text: '', correct: false},
+      prompts: {
+        1: 'The quick brown fox jumps over the lazy dog.',
+        2: 'The five boxing wizards jump quickly.',
+        3: 'Yeat is the best rapper of all time.',
+        4: 'Choosing to do nothing is still a choice, after all.',
+        5: 'The best way to predict the future is to create it.',
+        6: 'The secret code they created made no sense, even to them.',
+        7: 'The shooter says goodbye to his love.',
+        8: 'The lake is a long way from here.',
+        9: 'The mysterious diary records the voice.',
+        10: 'The sky is clear; the stars are twinkling.',
+        11: 'The waves were crashing on the shore; it was a lovely sight.',
+        12: 'The stranger officiates the meal.',
+        13: 'The old apple revels in its authority.',
+        14: 'The shooter says goodbye to his love.',
+        15: 'The lake is a long way from here.',
+      },
     }
   },
   methods: {
-    addTask() {
-      if (this.newTask.length < 1) return
-      fetch('/addTask', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-        id: this.tasks.length + 1,
-        name: this.newTask,
-        finished: false,
-        })
-      })
-      .then(res => res.json())
-      .then(data => {
-        this.tasks.push(data)
-      })
-      
-      this.newTask = ''
+    checkInput(currChar){
+      while (currChar < this.prompt.length){
+        if (this.userInput.text === this.prompt.substring(0, currChar + 1)) {
+          currChar++;
+          this.wrongInput.text = '';
+          this.correctInput.text = this.userInput.text;
+        } else {
+          console.log(this.correctInput.text.length)
+          this.wrongInput.text = this.userInput.text.substring(this.correctInput.text.length, this.userInput.text.length);
+
+        }
+        return {correctInput: this.correctInput, wrongInput: this.wrongInput}
+      }
     },
-    removeTask(taskID) {
-      this.tasks = this.tasks.filter(task => {
-          return task.id !== taskID
-      });
-    },
-    finishTask(task) {
-      task.finished = !task.finished
+    wordsPerMinute(){
+      var words = this.userInput.text.split(' ').length;
+      var minutes = 1;
+      var wpm = words / minutes;
+      return wpm;
     }
+
+
   },
   computed: {
-    allTasks() {
-        return this.tasks.length
+    randomPrompt() {
+      let keys = Object.keys(this.prompts)
+      let index = keys[Math.floor(Math.random() * keys.length)]
+      this.prompt = this.prompts[index]
+      return this.prompt
     },
-    latest() {
-        return [...this.tasks].reverse()
+    displayInput() {
+      var currChar = this.userInput.text.length -1;
+      var checked = this.checkInput(currChar)
+      console.log('cor: ' + checked.correctInput.text)
+      console.log('wrong: ' + checked.wrongInput.text)
+      console.log('all: ' + this.userInput.text)
+      return checked
+    },
+    showWPM() {
+      return this.wordsPerMinute()
     }
   },
   created(){
-    fetch('/getTasks', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    .then(res => res.json())
-    .then(data => {
-      this.tasks = data
-    })
+
   }
 }
 
@@ -97,5 +104,9 @@ export default {
 
 
 <style scoped>
+  .example{
+    display: flex;
+    flex-direction: row;
+  }
 
 </style>
