@@ -1,8 +1,27 @@
 <template>
   <h1>{{ title }}</h1>
-  <div class="prompt-section">
+
+  <div class = 'start-head'>
+    <button class="start-btn" @click="start()">start</button>
+    <p class="count-down">{{ timer }}</p>
+  </div>
+
+  <div class="on-start" v-if="startBool">
+
+    <p class="count">{{ count }}</p>
+
+    <div class="prompt-section">
     <h2>Prompt</h2>
     <p class="prompt"> {{ randomPrompt }}  </p>
+    
+    <div class="wpm">
+      <h2>Words Per Minute</h2>
+      <p v-if="showWPM > 0">{{ showWPM }}</p>
+      <p v-else>0</p>
+  </div>
+
+  </div>
+
   </div>
 
   <div class="user-input">
@@ -14,12 +33,6 @@
     </div>
   </div>
 
-  <div class="wpm">
-    <h2>Words Per Minute</h2>
-    <p> Not accurate yet </p>
-    <p>{{ wordsPerMinute }}</p>
-  </div>
-
 </template>
 
 <script>
@@ -27,9 +40,12 @@ export default {
   data() {
     return {
       title: 'Type Speed Test',
+      startBool: false,
       disabled: false,
       activeColor: 'red',
       prompt: '',
+      count: 0,
+      timer: 3,
       userInput: {text: '', correct: true},
       correctInput: {text: '', correct: true},
       wrongInput: {text: '', correct: false},
@@ -53,6 +69,9 @@ export default {
     }
   },
   methods: {
+    start(){
+      this.countDown()
+    },
     checkInput(currChar){
       while (currChar < this.prompt.length){
         if (this.userInput.text === this.prompt.substring(0, currChar + 1)) {
@@ -68,12 +87,28 @@ export default {
       }
     },
     wordsPerMinute(){
-      var words = this.userInput.text.split(' ').length;
-      var minutes = 1;
-      var wpm = words / minutes;
+      var words = this.userInput.text.split(' ').length - 1;
+      var wpm = Math.floor(words / (this.count / 60));
       return wpm;
-    }
+    },
+    countUp(){
+        setTimeout(() => {
+          this.count += 1
+          this.countUp()
+      }, 1000)
+    },
+    countDown(){
+      setTimeout(() => {
+        if(this.timer == 0){
+          this.countUp();
+          return this.startBool = true;
+        }
 
+
+          this.timer -= 1
+          this.countDown()
+      }, 1000)
+    }
 
   },
   computed: {
@@ -84,15 +119,17 @@ export default {
       return this.prompt
     },
     displayInput() {
-      var currChar = this.userInput.text.length -1;
+      var currChar = this.userInput.text.length -1
       var checked = this.checkInput(currChar)
+
       console.log('cor: ' + checked.correctInput.text)
       console.log('wrong: ' + checked.wrongInput.text)
       console.log('all: ' + this.userInput.text)
+
       return checked
     },
     showWPM() {
-      return this.wordsPerMinute()
+        return this.wordsPerMinute()
     }
   },
   created(){
@@ -108,5 +145,15 @@ export default {
     display: flex;
     flex-direction: row;
   }
-
+  .start-head{
+    display: flex;
+    flex-direction: row;
+  }
+  .start-btn{
+    height: 20px;
+    margin-top: 15px;
+  }
+  .count-down{
+    margin-left: 10px;
+  }
 </style>
